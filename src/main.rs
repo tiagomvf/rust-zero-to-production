@@ -1,32 +1,18 @@
-use rand::{thread_rng, Rng};
-use std::cmp::Ordering;
-use std::io;
+use actix_web::{web, App, HttpRequest, HttpServer, Responder};
 
-fn main() {
-    println!("Guess the number!");
-    let secret_number = thread_rng().gen_range(1..=100);
+async fn greet(req: HttpRequest) -> impl Responder {
+    let name = req.match_info().get("name").unwrap_or("World");
+    return format!("Hello {}!", &name)
+}
 
-    loop {
-        println!("Please input your guess.");
-        let mut guess = String::new();
-        io::stdin()
-            .read_line(&mut guess)
-            .expect("Failed to read line");
-
-        let guess: u32 = match guess.trim().parse() {
-            Ok(num) => num,
-            Err(_) => continue,
-        };
-
-        eprintln!("You guessed {guess}");
-
-        match guess.cmp(&secret_number) {
-            Ordering::Less => println!("Too Small!"),
-            Ordering::Greater => println!("Too Big!"),
-            Ordering::Equal => {
-                println!("You win!");
-                break;
-            }
-        }
-    }
+#[tokio::main]
+async fn main() -> std::io::Result<()> {
+    HttpServer::new(|| {
+        App::new()
+            .route("/", web::get().to(greet))
+            .route("/{name}", web::get().to(greet))
+    })
+        .bind("127.0.0.1:8000")?
+        .run()
+        .await
 }

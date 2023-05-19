@@ -33,9 +33,8 @@ where
 
     // The `with` method is provided by `SubscriberExt`, an extension
     // trait for `Subscriber` exposed by `tracing_subscriber`
-    let subscriber = Registry::default()
+    Registry::default()
         .with(env_filter)
         .with(JsonStorageLayer)
-        .with(formatting_layer);
-    subscriber
+        .with(formatting_layer)
 }

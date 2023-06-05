@@ -16,7 +16,7 @@ pub fn get_configuration() -> Result<Settings, config::ConfigError> {
         .expect("Failed to parse APP_ENVIRONMENT");
 
     settings.merge(
-      config::File::from(configuration_directory.join(environment.as_str())).required(true)
+        config::File::from(configuration_directory.join(environment.as_str())).required(true),
     )?;
 
     settings.try_into()
@@ -24,7 +24,7 @@ pub fn get_configuration() -> Result<Settings, config::ConfigError> {
 
 pub enum Environment {
     Local,
-    Production
+    Production,
 }
 
 impl Environment {
@@ -42,7 +42,10 @@ impl TryFrom<String> for Environment {
         match value.to_lowercase().as_str() {
             "local" => Ok(Self::Local),
             "production" => Ok(Self::Production),
-            other => Err(format!("{} is not a supported environment. Use either `local` or `production`.", other))
+            other => Err(format!(
+                "{} is not a supported environment. Use either `local` or `production`.",
+                other
+            )),
         }
     }
 }
